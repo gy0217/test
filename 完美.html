@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能家居 APP UI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 基本页面布局和屏幕模拟 */
+        body {
+            background-color: #f0f2f5; /* 淡灰色背景，衬托屏幕 */
+            padding: 2rem;
+            display: flex;
+            justify-content: center; /* 水平居中 */
+            align-items: flex-start; /* 顶部对齐 */
+            min-height: 100vh;
+            overflow-x: auto; /* 允许横向滚动查看所有屏幕 */
+        }
+        .mobile-screen {
+            width: 375px;
+            height: 812px;
+            border: 1px solid #cccccc; /* 模拟手机边框 */
+            background-color: #ffffff; /* 屏幕默认白色背景 */
+            overflow: hidden; /* 隐藏超出内容，模拟无滚动条 */
+            display: flex;
+            flex-direction: column; /* 垂直布局，主内容+底部导航 */
+            position: relative; /* 用于绝对定位底部导航 */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 轻微阴影增加立体感 */
+            border-radius: 20px; /* 轻微圆角边框 */
+            flex-shrink: 0; /* 防止屏幕在flex容器中被压缩 */
+        }
+        .main-content {
+            flex-grow: 1; /* 占据剩余空间 */
+            overflow-y: auto; /* 内容可滚动，但隐藏滚动条 */
+            /* 隐藏滚动条 */
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .main-content::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+        .bottom-nav {
+            height: 64px; /* 底部导航高度 */
+            border-top: 1px solid #e5e7eb; /* 分隔线 */
+            background-color: rgba(255, 255, 255, 0.9); /* 轻微透明感 */
+            backdrop-filter: blur(5px); /* 毛玻璃效果 */
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 10; /* 确保在内容之上 */
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        .nav-item svg {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 2px;
+        }
+        .nav-item span {
+            font-size: 10px;
+        }
+        /* 强调色 - 假设选用活力橙 */
+        .text-accent { color: #F97316; } /* text-orange-600 */
+        .bg-accent { background-color: #F97316; }
+        .border-accent { border-color: #F97316; }
+
+         /* 自定义渐变 */
+        .gradient-calm { background-image: linear-gradient(to top right, #a8edea, #fed6e3); } /* 柔和粉蓝 */
+        .gradient-focus { background-image: linear-gradient(to top right, #d4fc79, #96e6a1); } /* 清新绿 */
+        .gradient-relax { background-image: linear-gradient(to top right, #89f7fe, #66a6ff); } /* 宁静蓝 */
+         .gradient-bg-home { background-image: linear-gradient(160deg, #e0f2fe 0%, #ffffff 70%); } /* 首页背景-淡蓝到白 */
+         .gradient-profile-header { background-image: linear-gradient(to bottom, #fef3c7, #ffffff); } /* 我的页面顶部-淡黄到白 */
+
+         /* 互动页面特定样式 */
+         .message-input-container {
+            position: absolute;
+            bottom: 64px; /* 位于底部导航之上 */
+            left: 0;
+            right: 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(3px);
+            border-top: 1px solid #e5e7eb;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+         }
+         .message-input {
+             flex-grow: 1;
+             border: 1px solid #d1d5db;
+             border-radius: 16px;
+             padding: 8px 12px;
+             font-size: 14px;
+             margin-right: 8px;
+             background-color: #f9fafb;
+         }
+         .send-button {
+             background-color: #F97316; /* 强调色 */
+             border-radius: 50%;
+             padding: 8px;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             color: white;
+         }
+         .send-button svg {
+            width: 18px;
+            height: 18px;
+         }
+         /* 水平滚动容器隐藏滚动条 */
+         .hide-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+         }
+         .hide-scrollbar::-webkit-scrollbar {
+             display: none; /* Chrome, Safari, Opera */
+         }
+
+    </style>
+</head>
+<body>
+    <div class="flex space-x-6"> <!-- 横向排列容器 -->
+
+        <!-- 屏幕 1: 首页 (情绪仪表盘) -->
+        <div class="mobile-screen">
+            <div class="main-content gradient-bg-home pb-20"> <!-- 预留底部导航空间 -->
+                <!-- 顶部问候 -->
+                <div class="px-6 pt-10 pb-4">
+                    <h1 class="text-2xl font-semibold text-black">早上好！</h1>
+                </div>
+
+                <!-- 今日情绪状态 -->
+                <div class="px-6 mb-6 flex flex-col items-center text-center">
+                    <div class="mb-3 p-4 bg-white rounded-full shadow-md">
+                        <!-- SVG 图标: 开心 (示例) -->
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a.5.5 0 10-.708.707 3.5 3.5 0 01-4.95 0 .5.5 0 10-.707-.707 4.5 4.5 0 006.364 0z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <p class="text-lg font-medium text-black mb-1">今天感觉：<span class="font-semibold text-accent">开心</span></p>
+                    <p class="text-xs text-black opacity-60">AI 已为您优化环境设置</p>
+                </div>
+
+                <!-- AI 语音提示框 -->
+                <div class="mx-6 mb-6 p-4 bg-white rounded-xl shadow-sm flex items-center space-x-3 border border-gray-100">
+                    <!-- SVG 图标: 麦克风 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                    </svg>
+                    <p class="text-sm text-black flex-1">“今天阳光不错，建议打开窗帘，享受自然光。为您推荐‘活力清晨’模式。”</p>
+                </div>
+
+                <!-- 推荐情绪场景模式 -->
+                 <div class="px-6 mb-6">
+                    <h2 class="text-lg font-semibold text-black mb-3">场景推荐</h2>
+                    <div class="space-y-3">
+                        <!-- 场景卡片 1: 舒缓模式 -->
+                        <div class="gradient-relax p-4 rounded-xl shadow-md flex items-center justify-between text-white">
+                            <div class="flex items-center space-x-3">
+                                <!-- SVG 图标: 月亮/放松 -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                                </svg>
+                                <div>
+                                    <p class="font-semibold">舒缓模式</p>
+                                    <p class="text-xs opacity-80">柔和灯光 · 轻音乐 · 淡雅香薰</p>
+                                </div>
+                            </div>
+                            <button class="p-2 bg-white bg-opacity-30 rounded-full">
+                                <!-- SVG 图标: 播放/应用 -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                         <!-- 场景卡片 2: 专注模式 -->
+                        <div class="gradient-focus p-4 rounded-xl shadow-md flex items-center justify-between text-black">
+                            <div class="flex items-center space-x-3">
+                                <!-- SVG 图标: 灯泡/专注 -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                </svg>
+                                <div>
+                                    <p class="font-semibold">专注模式</p>
+                                    <p class="text-xs opacity-80">明亮白光 · 无背景音 · 空气清新</p>
+                                </div>
+                            </div>
+                             <button class="p-2 bg-white bg-opacity-50 rounded-full">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-black" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 快捷调节按钮 -->
+                <div class="px-6 mb-6">
+                     <h2 class="text-lg font-semibold text-black mb-3">快捷调节</h2>
+                     <div class="grid grid-cols-3 gap-4">
+                        <!-- 按钮: 灯光 -->
+                        <button class="flex flex-col items-center p-3 bg-white rounded-xl shadow-sm border border-gray-100 space-y-1.5 hover:shadow-md transition-shadow">
+                             <!-- SVG 图标: 灯泡 -->
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                               <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                             </svg>
+                             <span class="text-xs text-black">灯光</span>
+                        </button>
+                        <!-- 按钮: 温度 -->
+                        <button class="flex flex-col items-center p-3 bg-white rounded-xl shadow-sm border border-gray-100 space-y-1.5 hover:shadow-md transition-shadow">
+                            <!-- SVG 图标: 温度计 -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10.657C11.414 13.071 13 14.828 13 17a5 5 0 01-5 5" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.5 12.571l-2.043 2.043m0 0a2.5 2.5 0 103.536 3.536M6.957 14.614l2.043-2.043" />
+                             </svg>
+                             <span class="text-xs text-black">温度</span>
+                        </button>
+                         <!-- 按钮: 音乐 -->
+                        <button class="flex flex-col items-center p-3 bg-white rounded-xl shadow-sm border border-gray-100 space-y-1.5 hover:shadow-md transition-shadow">
+                             <!-- SVG 图标: 音乐 -->
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                               <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                             </svg>
+                             <span class="text-xs text-black">音乐</span>
+                        </button>
+                     </div>
+                </div>
+
+            </div>
+            <!-- 底部导航栏 -->
+            <div class="bottom-nav">
+                <div class="nav-item text-accent"> <!-- 首页激活状态 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"> <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /> </svg>
+                    <span class="font-medium">首页</span>
+                </div>
+                <div class="nav-item text-black opacity-60">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /> </svg>
+                    <span>控制</span>
+                </div>
+                 <div class="nav-item text-black opacity-60">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"> <path stroke-linecap="round" stroke-linejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2V10a2 2 0 012-2h8zM7 8V6a2 2 0 012-2h6a2 2 0 012 2v2" /> </svg>
+                    <span>互动</span>
+                </div>
+                 <div class="nav-item text-black opacity-60">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"> <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /> </svg>
+                    <span>我的</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 屏幕 2: 智能控制页 -->
+        <div class="mobile-screen bg-gray-50">
+            <div class="main-content pb-20"> <!-- 预留底部导航空间 -->
+                <!-- 顶部标题 -->
+                <div class="px-6 pt-10 pb-4">
+                    <h1 class="text-2xl font-semibold text-black">智能控制</h1>
+                </div>
+                <!-- 房间分区导航栏 -->
+                <div class="px-6 py-3 border-b border-gray-200 overflow-x-auto whitespace-nowrap hide-scrollbar">
+                    <div class="flex space-x-5">
+                        <button class="text-sm font-medium text-accent border-b-2 border-accent pb-1">客厅</button>
+                        <button class="text-sm font-medium text-black opacity-60 pb-1">卧室</button>
+                        <button class="text-sm font-medium text-black opacity-60 pb-1">厨房</button>
+                        <button class="text-sm font-medium text-black opacity-60 pb-1">书房</button>
+                        <button class="text-sm font-medium text-black opacity-60 pb-1">浴室</button>
+                    </div>
+                </div>
+                <!-- 模式切换组件 -->
+                 <div class="px-6 pt-4 pb-2">
+                    <div class="flex justify-center space-x-2 bg-gray-200 p-1 rounded-lg">
+                        <button class="flex-1 text-xs text-black py-1.5 rounded-md">手动</button>
+                        <button class="flex-1 text-xs text-black py-1.5 rounded-md">自动</button>
+                        <button class="flex-1 text-xs text-white py-1.5 rounded-md bg-accent shadow">AI模式</button>
+                    </div>
+                </div>
+                 <!-- 情绪联动提醒 -->
+                <div class="mx-6 my-4 p-3 bg-blue-100 rounded-lg flex items-center space-x-2 border border-blue-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"> <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /> </svg>
+                    <p class="text-xs text-black">情绪联动：检测到<span class="font-medium">放松</span>，客厅灯光已调整为暖色调。</p>
+                </div>
+                <!-- 设备控制卡片列表 -->
+                <div class="px-6 space-y-4 pt-2">
+                    <!-- 设备卡片: 灯光 -->
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-500" viewBox="0 0 20 20" fill="currentColor"> <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.657a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 14.95a1 1 0 101.414 1.414l.707-.707a1 1 0 00-1.414-1.414l-.707.707zM5 10a1 1 0 01-1-1V8a1 1 0 112 0v1a1 1 0 01-1 1zM8 16.95A1 1 0 017 16V4a1 1 0 011.447-.894l6 2A1 1 0 0115 6v8a1 1 0 01-1.447.894l-6 2A1 1 0 018 16.95z" /> </svg>
+                            <div>
+                                <p class="text-sm font-medium text-black">客厅主灯</p>
+                                <p class="text-xs text-black opacity-60">开启 - 亮度 75%</p>
+                            </div>
+                        </div>
+                        <button class="w-10 h-6 rounded-full p-0.5 transition-colors duration-200 ease-in-out bg-accent"> <span class="block w-5 h-5 rounded-full bg-white transform translate-x-4 transition-transform duration-200 ease-in-out"></span> </button>
+                    </div>
+                    <!-- 设备卡片: 窗帘 -->
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18m0 0h6M12 21H6m10.5-18H5.5a2 2 0 00-2 2v14a2 2 0 002 2h13a2 2 0 002-2V5a2 2 0 00-2-2zm-1.414 0H7.914" /> </svg>
+                            <div>
+                                <p class="text-sm font-medium text-black">客厅窗帘</p>
+                                <p class="text-xs text-black opacity-60">已关闭</p>
+                            </div>
+                        </div>
+                        <button class="w-10 h-6 rounded-full p-0.5 transition-colors duration-200 ease-in-out bg-gray-300"> <span class="block w-5 h-5 rounded-full bg-white transform translate-x-0 transition-transform duration-200 ease-in-out"></span> </button>
+                    </div>
+                    <!-- 设备卡片: 空调 -->
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"> <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /> <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7M2.458 12C3.732 16.057 7.523 19 12 19c4.478 0 8.268-2.943 9.542-7" /> </svg>
+                             <div>
+                                <p class="text-sm font-medium text-black">客厅空调</p>
+                                <p class="text-xs text-black opacity-60">制冷 - 24°C - 自动风</p>
+                            </div>
+                        </div>
+                        <button class="w-10 h-6 rounded-full p-0.5 transition-colors duration-200 ease-in-out bg-accent"> <span class="block w-5 h-5 rounded-full bg-white transform translate-x-4 transition-transform duration-200 ease-in-out"></span> </button>
+                    </div>
+                </div>
+            </div>
+            <!-- 底部导航栏 -->
+            <div class="bottom-nav">
+                 <div class="nav-item text-black opacity-60">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"> <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /> </svg>
+                    <span>首页</span>
+                </div>
+                <div class="nav-item text-accent"> <!-- 控制激活状态 -->
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /> </svg>
+                    <span class="font-medium">控制</span>
+                </div>
+                 <div class="nav-item text-black opacity-60">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"> <path stroke-linecap="round" stroke-linejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2V10a2 2 0 012-2h8zM7 8V6a2 2 0 012-2h6a2 2 0 012 2v2" /> </svg>
+                    <span>互动</span>
+                </div>
+                 <div class="nav-item text-black opacity-60">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"> <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /> </svg>
+                    <span>我的</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 屏幕 3: 互动页面 -->
+        <div class="mobile-screen bg-white">
+            <div class="main-content pb-32"> <!-- 预留底部导航和输入框空间 -->
+                <!-- 顶部标题 -->
+                <div class="px-6 pt-10 pb-4 sticky top-0 bg-white bg-opacity-90 backdrop-filter backdrop-blur-sm z-5">
+                    <h1 class="text-2xl font-semibold text-black text-center">家庭互动</h1>
+                </div>
+
+                <!-- 在线成员 -->
+                <div class="px-6 pt-2 pb-4 border-b border-gray-100">
+                    <h2 class="text-xs font-medium text-black opacity-60 mb-3">在线成员</h2>
+                    <div class="flex space-x-4 overflow-x-auto hide-scrollbar pb-1">
+                        <!-- 成员头像+昵称 (示例) -->
+                        <div class="flex flex-col items-center space-y-1 flex-shrink-0 w-16">
+                            <img src="https://source.unsplash.com/random/100x100/?portrait,woman" alt="成员头像" class="w-12 h-12 rounded-full object-cover border-2 border-green-400 p-0.5">
+                            <span class="text-xs text-black truncate w-full text-center">妈妈</span>
+                        </div>
+                        <div class="flex flex-col items-center space-y-1 flex-shrink-0 w-16">
+                            <img src="https://source.unsplash.com/random/100x100/?portrait,man" alt="成员头像" class="w-12 h-12 rounded-full object-cover border-2 border-gray-300 p-0.5">
+                             <span class="text-xs text-black opacity-70 truncate w-full text-center">爸爸</span>
+                        </div>
+                         <div class="flex flex-col items-center space-y-1 flex-shrink-0 w-16">
+                            <img src="https://source.unsplash.com/random/100x100/?portrait,teenager" alt="成员头像" class="w-12 h-12 rounded-full object-cover border-2 border-green-400 p-0.5">
+                             <span class="text-xs text-black truncate w-full text-center">小明</span>
+                        </div>
+                         <div class="flex flex-col items-center space-y-1 flex-shrink-0 w-16">
+                            <img src="https://source.unsplash.com/random/100x100/?cat" alt="成员头像" class="w-12 h-12 rounded-full object-cover border-2 border-gray-300 p-0.5">
+                             <span class="text-xs text-black opacity-70 truncate w-full text-center">访客</span>
+                        </div>
+                        <!-- 添加更多成员... -->
+                    </div>
+                </div>
+
+                <!-- 小提示 -->
+                <div class="mx-6 my-4 p-3 bg-yellow-100 rounded-lg flex items-center space-x-2 border border-yellow-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /> </svg>
+                    <p class="text-xs text-black">小提示：尝试发送一个表情，看看家里的灯光会有什么变化？</p>
+                </div>
+
+                <!-- 情绪留言墙 (互动记录) -->
+                <div class="px-6 space-y-5 pt-2">
+                    <!-- 留言 1 (自己) -->
+                    <div class="flex justify-end">
+                        <div class="bg-accent text-white p-3 rounded-lg rounded-br-none max-w-xs shadow-sm">
+                            <p class="text-sm">今天工作有点累，需要放松一下 😌</p>
+                            <p class="text-xs opacity-70 text-right mt-1">下午 6:30</p>
+                        </div>
+                    </div>
+                    <!-- 留言 2 (他人) -->
+                    <div class="flex justify-start">
+                         <div class="flex items-end space-x-2">
+                             <img src="https://source.unsplash.com/random/100x100/?portrait,woman" alt="成员头像" class="w-8 h-8 rounded-full object-cover flex-shrink-0">
+                             <div class="bg-gray-100 text-black p-3 rounded-lg rounded-bl-none max-w-xs shadow-sm">
+                                <p class="text-sm font-medium mb-0.5">妈妈</p>
+                                <p class="text-sm">好的，已经为你开启舒缓模式，听点音乐吧~ ❤️</p>
+                                <p class="text-xs opacity-60 text-right mt-1">下午 6:32</p>
+                            </div>
+                         </div>
+                    </div>
+                     <!-- 留言 3 (系统/联动) -->
+                     <div class="text-center my-3">
+                         <span class="text-xs text-black opacity-50 bg-gray-100 px-2 py-0.5 rounded-full">灯光已调整为暖黄色</span>
+                     </div>
+                    <!-- 留言 4 (他人) -->
+                    <div class="flex justify-start">
+                         <div class="flex items-end space-x-2">
+                            <img src="https://source.unsplash.com/random/100x100/?portrait,teenager" alt="成员头像" class="w-8 h-8 rounded-full object-cover flex-shrink-0">
+                             <div class="bg-gray-100 text-black p-3 rounded-lg rounded-bl-none max-w-xs shadow-sm">
+                                <p class="text-sm font-medium mb-0.5">小明</p>
+                                <p class="text-sm">我回来啦！今天考试考得不错！🎉</p>
+                                <p class="text-xs opacity-60 text-right mt-1">下午 6:45</p>
+                            </div>
+                         </div>
+                    </div>
+                    <!-- 更多留言... -->
+                </div>
+            </div>
+
+            <!-- 留言发送输入框 -->
+            <div class="message-input-container">
+                <input type="text" placeholder="说点什么吧..." class="message-input focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent transition">
+                <button class="send-button hover:bg-orange-700 transition">
+                    <!-- SVG 图标: 发送 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"> <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /> </svg>
+                </button>
+            </div>
+
+            <!-- 底部导航栏 -->
+            <div class="bottom-nav">
+                 <div class="nav-item text-black opacity-60">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"> <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /> </svg>
+                    <span>首页</span>
+                </div>
+                <div class="nav-item text-black opacity-60">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /> </svg>
+                    <span>控制</span>
+                </div>
+                 <div class="nav-item text-accent"> <!-- 互动激活状态 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"> <path stroke-linecap="round" stroke-linejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2V10a2 2 0 012-2h8zM7 8V6a2 2 0 012-2h6a2 2 0 012 2v2" /> </svg>
+                    <span class="font-medium">互动</span>
+                </div>
+                 <div class="nav-item text-black opacity-60">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"> <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /> </svg>
+                    <span>我的</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 屏幕 4: 我的页面 -->
+        <div class="mobile-screen bg-gray-50">
+            <div class="main-content pb-20"> <!-- 预留底部导航空间 -->
+                 <!-- 顶部个人信息区 -->
+                <div class="gradient-profile-header px-6 pt-12 pb-6 flex items-center space-x-4">
+                   <img src="https://source.unsplash.com/random/100x100/?portrait,person" alt="用户头像" class="w-16 h-16 rounded-full object-cover border-2 border-white shadow-sm">
+                   <div>
+                       <p class="text-lg font-semibold text-black">用户名</p>
+                       <p class="text-xs text-black opacity-70">编辑个人资料</p>
+                   </div>
+                </div>
+
+                <!-- 设置列表 -->
+                <div class="px-4 py-4">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                       <ul class="divide-y divide-gray-100">
+                           <!-- 情绪档案 -->
+                           <li class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition">
+                               <div class="flex items-center space-x-3">
+                                    <!-- SVG 图标: 档案/图表 -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"> <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /> </svg>
+                                    <span class="text-sm font-medium text-black">情绪档案</span>
+                               </div>
+                               <!-- SVG 图标: 右箭头 -->
+                               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /> </svg>
+                           </li>
+                            <!-- 联动规则设置 -->
+                           <li class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition">
+                               <div class="flex items-center space-x-3">
+                                    <!-- SVG 图标: 链接/规则 -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"> <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /> </svg>
+                                    <span class="text-sm font-medium text-black">联动规则设置</span>
+                               </div>
+                               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /> </svg>
+                           </li>
+                           <!-- 节能报告 -->
+                           <li class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition">
+                               <div class="flex items-center space-x-3">
+                                    <!-- SVG 图标: 叶子/节能 -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"> <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /> </svg>
+                                    <span class="text-sm font-medium text-black">节能报告</span>
+                               </div>
+                               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /> </svg>
+                           </li>
+                       </ul>
+                    </div>
+                </div>
+
+                 <div class="px-4 py-2">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                       <ul class="divide-y divide-gray-100">
+                           <!-- 个性化设置 -->
+                           <li class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition">
+                               <div class="flex items-center space-x-3">
+                                    <!-- SVG 图标: 设置/齿轮 -->
+                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"> <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /> <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /> </svg>
+                                    <span class="text-sm font-medium text-black">个性化设置</span>
+                               </div>
+                               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /> </svg>
+                           </li>
+                            <!-- 隐私 -->
+                           <li class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition">
+                               <div class="flex items-center space-x-3">
+                                    <!-- SVG 图标: 盾牌/隐私 -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /> </svg>
+                                    <span class="text-sm font-medium text-black">隐私与安全</span>
+                               </div>
+                               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /> </svg>
+                           </li>
+                           <!-- 其他设置... -->
+                           <li class="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition">
+                               <div class="flex items-center space-x-3">
+                                    <!-- SVG 图标: 帮助/信息 -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"> <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /> </svg>
+                                    <span class="text-sm font-medium text-black">关于与帮助</span>
+                               </div>
+                               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /> </svg>
+                           </li>
+                       </ul>
+                    </div>
+                </div>
+
+                 <!-- 退出登录按钮 -->
+                <div class="px-4 py-6">
+                     <button class="w-full py-2.5 bg-white text-red-600 text-sm font-medium rounded-lg shadow-sm border border-gray-200 hover:bg-red-50 transition">退出登录</button>
+                </div>
+
+
+            </div>
+            <!-- 底部导航栏 -->
+            <div class="bottom-nav">
+                 <div class="nav-item text-black opacity-60">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"> <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /> </svg>
+                    <span>首页</span>
+                </div>
+                <div class="nav-item text-black opacity-60">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /> </svg>
+                    <span>控制</span>
+                </div>
+                 <div class="nav-item text-black opacity-60">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"> <path stroke-linecap="round" stroke-linejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2V10a2 2 0 012-2h8zM7 8V6a2 2 0 012-2h6a2 2 0 012 2v2" /> </svg>
+                    <span>互动</span>
+                </div>
+                 <div class="nav-item text-accent"> <!-- 我的激活状态 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"> <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /> </svg>
+                    <span class="font-medium">我的</span>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- /flex -->
+</body>
+</html>
